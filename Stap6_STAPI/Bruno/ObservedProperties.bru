@@ -1,0 +1,15 @@
+meta {
+  name: ObservedProperties
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{Endpoint}}/ObservedProperties?$select=@iot.id,name
+  body: none
+  auth: inherit
+}
+
+params:query {
+  $select: @iot.id,name
+}
