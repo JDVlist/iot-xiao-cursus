@@ -1,9 +1,13 @@
 # Iot Workshop 
 
-## Timing
-10:00 tot 16:00
-Lunch op de middag
+Create a arduino_secrets.h containing your wifi creds (dont sync it with git):
 
+```cpp
+#pragma once
+
+#define SECRET_SSID "xxxx"
+#define SECRET_PASS "xxxx"
+```
 ## Context
 Introductie in de wereld van IoT, van Thing tot (interoperable) service.
 
@@ -22,7 +26,4 @@ Geniet van de dag samen.
 - Opzetten van een Docker webservice voor de metingen
 - Thing laten meten en meeting versturen
 - Kijken naar al onze data
-- Gast spreker (14:30)
 - Conclusie
-
-[Ga naar Stap1](https://github.com/lathoub/IoT/blob/main/Stap1_Setup/XIAO.md)
