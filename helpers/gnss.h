@@ -1,6 +1,8 @@
 #pragma once
 
+// Don't forget to install into your Arduino IDE libraries:
 #include <TinyGPSPlus.h> // https://github.com/mikalhart/TinyGPSPlus
+
 
 // Reference coordinates for Amersfoort, Netherlands
 static const double AMERSFOORT_LAT = 52.1561113;
