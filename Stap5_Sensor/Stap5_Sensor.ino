@@ -19,6 +19,8 @@
 //#include "helpers/dateTime.h"   // Time synchronization (currently disabled)
 #include "../helpers/gnss.h"  // GPS location tracking
 
+#include <ArduinoJson.h>
+
 // Function declaration for data transmission
 void transmitValue(float value, char* UoM);
 
@@ -38,58 +40,72 @@ void transmitValue(float value, char* UoM);
 void setup() {
   // Initialize system components
   setupLogging();  // Start serial communication at 115200 baud
-  // setupGNSS();     // Initialize GPS module on pins D4/D5
+  setupGNSS();     // Initialize GPS module on pins D4/D5
   setupSensor();   // Initialize the selected sensor
   // setupWiFi();     // Start WiFi connection process
 
   Serial.println("[SYS ] Booted");  // Confirm successful boot
 }
 
-/**
- * Transmit sensor value to remote server/cloud
- * @param value The sensor reading to transmit
- */
-void transmitValue(float value, char* UoM) {
+// /**
+//  * Transmit sensor value to remote server/cloud
+//  * @param value The sensor reading to transmit
+//  */
+// void transmitValue(float value, char* UoM) {
 
-  if (WiFi.status() == WL_CONNECTED) {
-    // WiFi is connected - ready to transmit data
-    Serial.printf("%.2f%s\n", value, UoM);
+//   if (WiFi.status() == WL_CONNECTED) {
+//     // WiFi is connected - ready to transmit data
+//     Serial.printf("%.2f%s\n", value, UoM);
 
-    // TODO: Add POST request
+//     // TODO: Add POST request
 
-  } else {
-    // WiFi not connected - log the value for debugging
-    Serial.printf("[WiFi] Not connected to Transmit. Value: %.2f%s\n", value, UoM);
-  }
-}
+//   } else {
+//     // WiFi not connected - log the value for debugging
+//     Serial.printf("[WiFi] Not connected to Transmit. Value: %.2f%s\n", value, UoM);
+//   }
+// }
 
 /**
  * Main loop function - runs forever
  */
 void loop() {
-  // Check and update WiFi connection status
-  // loopWifi();
+  // Update GNSS state
+  updateGNSS();
 
-  // Read and process GPS data
-  // loopGNSS();
-  
-  // Sensor
+  // Read GNSS values
+  GNSSData gps = getGNSSData();
+
+  // Read sensor values
   float temp = getTemperature();
   float hum = getHumidity();
 
-  json = {
-    "type": "Feature",
-    "geometry": {
-      "type": "Point", 
-      "coordinates": [1.0, 1.0]
-    },
-    "properties": {
-      "degrees C": temp,
-      "% rH": hum
-    }
+  // Build JSON
+  StaticJsonDocument<256> doc;
+  doc["type"] = "Feature";
+
+  //TODO: fix fixen
+  if (gps.hasFix) {
+    JsonObject geometry = doc.createNestedObject("geometry");
+    geometry["type"] = "Point";
+
+    JsonArray coordinates = geometry.createNestedArray("coordinates");
+    coordinates.add(gps.lng);   // GeoJSON: longitude first
+    coordinates.add(gps.lat);   // then latitude
+  } else {
+    doc["geometry"] = nullptr;
+    Serial.println("[GNSS] No valid fix available");
   }
 
-  transmitValue(json, "json");
+  JsonObject properties = doc.createNestedObject("properties");
+  properties["degrees C"] = temp;
+  properties["% rH"] = hum;
+  properties["hasFix"] = gps.hasFix;
+  properties["gnssAgeMs"] = gps.age;
+
+  String json;
+  serializeJson(doc, json);
+
+  Serial.println(json);
 
   delay(2000);
 }
