@@ -1,49 +1,203 @@
-# Het wordt straffer!
+# Stap 4: GNSS
 
-## Positie bepaling via GPS - of beter: GNSS[1]
+In deze stap lezen we een GNSS-module uit met de XIAO ESP32C3.
 
-We hier tenslotte bij Geonovum en vinden locatie leuk!
+GNSS staat voor Global Navigation Satellite System. GPS is daar een bekend voorbeeld van, maar moderne modules kunnen vaak ook signalen van andere satellietsystemen gebruiken. De module geeft uiteindelijk een positie terug in WGS 84: latitude en longitude in graden.
 
-## Het breadboard:
+In deze stap bouwen we nog geen GeoJSON. We testen alleen of de XIAO goede locatiegegevens uit de GNSS-module kan lezen. De herbruikbare code staat in `../helpers/gnss.h`; de testcode voor deze stap staat in `Stap4_GNSS.ino`.
 
-First things first! We gebruiken een breadboard en draden om verbindingen te leggen tussen componenten.
+## Library installeren
 
-(Afbeelding van https://www.budgetronics.eu/nl/hoe-werkt-een-breadboard)
+Deze stap gebruikt de Arduino-library `TinyGPSPlus`.
 
-![1__38__ms1 rvf_1](https://github.com/user-attachments/assets/c3629196-3a47-4481-82ab-f3e0f5d9ce59)
+Installeer die via de Arduino IDE:
 
-<img width="670" height="408" alt="1__38__ms1 rvf_2" src="https://github.com/user-attachments/assets/8b4b6081-9574-4e0f-bcb9-459f583d8935" />
+1. Ga naar **Sketch > Include Library > Manage Libraries...**
+2. Zoek naar `TinyGPSPlus`
+3. Installeer **TinyGPSPlus** van **Mikal Hart**
 
-![1__38__ms1 rvf_3](https://github.com/user-attachments/assets/fcf70c9c-df58-4496-9675-d9782186cd3f)
+Als deze library ontbreekt, krijg je een fout zoals:
 
-Belangrijk: verbindt massa nooit direct met de voeding! Als je het wel doet, dan ruik je het snel....
+```text
+fatal error: TinyGPSPlus.h: No such file or directory
+```
 
-## Het Thing en de GPS - hoe werkt dat?
+## Aansluiten
 
-De GPS (of meer algemeen: GNSS[1]) stuurt een serieel (1 draad voor zenden (TX, de blauwe draad) en 1 draad (optioneel) voor ontvangen) bytes door volgens het [NMEA protocol](https://nl.wikipedia.org/wiki/NMEA-0183).
+De GNSS-module communiceert via een seriele verbinding. Daarvoor gebruiken we de UART van de XIAO.
 
-<img width="890" height="636" alt="XIAO_GNSS_bb" src="https://github.com/user-attachments/assets/d13e407d-406a-4770-bb04-f43a2fa420d2" />
+Gebruik deze aansluiting:
 
->Let op: de GPS wordt gevoed met 5V - het signaal terug naar de XIAO is slecht 3.3V
+```text
+GNSS VCC  -> XIAO 5V
+GNSS GND  -> XIAO GND
+GNSS TX   -> XIAO D7 / RX
+```
 
-De blauwe TX draad (van de GPS) gaat naar het RX contact (pin D7) van de XIAO die intern verbonden is met de [UART](https://nl.wikipedia.org/wiki/UART).
+Voor deze stap lezen we alleen data uit de GNSS-module. Daarom is de `TX`-draad van de GNSS-module genoeg.
 
-<img width="1280" height="720" alt="pin_map-2" src="https://github.com/user-attachments/assets/50a36612-d3dc-4736-bbd5-2393f92ff132" />
+## RX en TX
 
+`TX` betekent transmit: deze pin verzendt data.
 
-## Programmeren maar
+`RX` betekent receive: deze pin ontvangt data.
 
-Open ArduinoIDE en laad het `Stap3_GNSS.ino` bestand; compileer en upload!
+Daarom sluit je niet `TX` op `TX` aan. De data moet juist van de ene kant naar de andere kant:
 
-[1] GPS, Beidou, Glonass, Galileo, QZSS, SBAS ...
+```text
+GNSS TX  ->  XIAO RX
+```
 
+De GNSS-module praat, de XIAO luistert. De zend-pin van de GNSS-module moet dus naar de ontvang-pin van de XIAO.
 
+Als je later ook commando's naar de GNSS-module wilt sturen, gebruik je ook de andere richting:
 
+```text
+XIAO TX  ->  GNSS RX
+```
 
+Maar voor deze cursus lezen we vooral locatiegegevens uit. Dan is `GNSS TX -> XIAO RX` het belangrijkste.
 
+In de code staat:
 
+```cpp
+#define RXPin D7
+#define TXPin D6
+```
 
+Dat betekent: de XIAO luistert naar de GNSS-module op `D7`.
 
+## Code
 
+Open in de Arduino IDE:
 
+```text
+Stap4_GNSS/Stap4_GNSS.ino
+```
 
+De sketch doet drie dingen:
+
+```cpp
+setupLogging();
+setupGNSS();
+updateGNSS();
+```
+
+Daarna haalt hij de laatste GNSS-data op:
+
+```cpp
+GNSSData gps = getGNSSData();
+```
+
+Die data komt uit `../helpers/gnss.h`.
+
+## Wat is een fix?
+
+Een fix betekent dat de GNSS-module genoeg satellietinformatie heeft om een positie te berekenen.
+
+Er zijn dus twee verschillende stappen:
+
+```text
+1. De XIAO ontvangt seriele data van de GNSS-module
+2. De GNSS-module heeft een geldige positie berekend
+```
+
+De eerste stap kun je zien aan `Chars processed`. Als die waarde oploopt, ontvangt de XIAO data.
+
+De tweede stap zie je aan `Fix: yes`. Dan zijn latitude en longitude geldig.
+
+## Output
+
+Open na het uploaden de Serial Monitor op `115200 baud`.
+
+Als alles werkt, zie je ongeveer dit:
+
+```text
+=== GNSS status ===
+Fix: yes
+Status: valid GNSS fix
+Latitude: 52.110352
+Longitude: 4.897106
+Age ms: 3
+
+--- Debug ---
+Chars processed: 9261
+Sentences with fix: 48
+Failed checksums: 25
+```
+
+De coordinaten zijn WGS 84:
+
+```text
+Latitude  = breedtegraad
+Longitude = lengtegraad
+```
+
+Voor GeoJSON gebruiken we later dezelfde waarden, maar dan in deze volgorde:
+
+```json
+"coordinates": [longitude, latitude]
+```
+
+GeoJSON gebruikt dus eerst longitude en daarna latitude.
+
+## Debuggen
+
+Gebruik de debugregels om te bepalen waar het probleem zit.
+
+### Geen data
+
+```text
+Fix: no
+Status: no GNSS data received; check wiring, power, and RX/TX pins
+Chars processed: 0
+Sentences with fix: 0
+Failed checksums: 0
+```
+
+De XIAO ontvangt geen data van de GNSS-module.
+
+Controleer dan:
+
+- krijgt de GNSS-module voeding?
+- zit `GND` op `GND`?
+- zit `GNSS TX` op `XIAO D7 / RX`?
+- is de draad niet los?
+- staat de baudrate op `9600`?
+
+### Wel data, geen fix
+
+```text
+Fix: no
+Status: GNSS data received, waiting for valid location fix
+Chars processed: 1200
+Sentences with fix: 0
+```
+
+De verbinding werkt, maar de GNSS-module heeft nog geen positie.
+
+Probeer dan:
+
+- leg de module dichter bij een raam
+- ga naar buiten
+- leg de antenne naar boven
+- wacht een paar minuten
+
+Een eerste fix kan traag zijn, vooral binnen.
+
+### Wel fix
+
+```text
+Fix: yes
+Status: valid GNSS fix
+```
+
+Dan is de stap gelukt. De latitude en longitude zijn bruikbaar voor de integratiestap.
+
+## Checksum failures
+
+`Failed checksums` betekent dat sommige ontvangen NMEA-zinnen beschadigd of onvolledig waren.
+
+Een paar checksum failures is niet meteen erg. Als de waarde heel snel blijft oplopen, controleer dan de draadjes, voeding en verbindingen.
+
+Als `Fix: yes` verschijnt en de coordinaten stabiel zijn, is de GNSS-stap goed genoeg om verder te gaan.

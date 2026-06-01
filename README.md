@@ -27,3 +27,7 @@ Geniet van de dag samen.
 - Thing laten meten en meeting versturen
 - Kijken naar al onze data
 - Conclusie
+
+
+
+https://api.riot-os.org/group__boards__seeedstudio-xiao-esp32c3.html 
