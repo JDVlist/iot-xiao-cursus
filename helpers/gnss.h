@@ -1,5 +1,6 @@
 #pragma once
 
+#include <math.h>
 #include <TinyGPSPlus.h>
 
 // Install TinyGPSPlus in Arduino IDE libraries:
@@ -14,33 +15,34 @@ const uint32_t GNSSBaud = 9600;
 
 // GNSS data container
 struct GNSSData {
-  double lat;              // WGS84 latitude in decimal degrees
-  double lng;              // WGS84 longitude in decimal degrees
-  bool hasFix;             // true when a valid location fix is available
-  unsigned long age;       // age of the fix in milliseconds
+  double lat;
+  double lng;
+  bool hasFix;
+  unsigned long age;
+  unsigned long charsProcessed;
+  unsigned long sentencesWithFix;
+  unsigned long failedChecksum;
+  const char* status;
 };
 
 // Internal GNSS parser object
 TinyGPSPlus gnss;
 
 // Internal state
-double currentLat = 0.0;
-double currentLng = 0.0;
+double currentLat = NAN;
+double currentLng = NAN;
 bool gnssHasFix = false;
 unsigned long lastGNSSUpdate = 0;
 bool gnssTimeoutReported = false;
+const char* gnssStatus = "waiting for GNSS data";
 
-// Initialize GNSS serial connection
-void setupGNSS()
-{
+void setupGNSS() {
   Serial.println("[GNSS] Initializing...");
   SERIALGNSS.begin(GNSSBaud, SERIAL_8N1, RXPin, TXPin);
   Serial.println("[GNSS] Initialized");
 }
 
-// Read and process incoming GNSS data
-void updateGNSS()
-{
+void updateGNSS() {
   while (SERIALGNSS.available() > 0) {
     if (gnss.encode(SERIALGNSS.read())) {
       if (gnss.location.isUpdated() && gnss.location.isValid()) {
@@ -49,13 +51,28 @@ void updateGNSS()
         gnssHasFix = true;
         lastGNSSUpdate = millis();
         gnssTimeoutReported = false;
+        gnssStatus = "valid GNSS fix";
+      } else if (!gnss.location.isValid()) {
+        gnssHasFix = false;
+        currentLat = NAN;
+        currentLng = NAN;
+        gnssStatus = "GNSS data received, waiting for valid location fix";
       }
     }
   }
 
-  // Timeout after 30 seconds without a valid update
+  if (millis() > 5000 && gnss.charsProcessed() < 10) {
+    gnssHasFix = false;
+    currentLat = NAN;
+    currentLng = NAN;
+    gnssStatus = "no GNSS data received; check wiring, power, and RX/TX pins";
+  }
+
   if (gnssHasFix && (millis() - lastGNSSUpdate > 30000)) {
     gnssHasFix = false;
+    currentLat = NAN;
+    currentLng = NAN;
+    gnssStatus = "GNSS timeout; no recent valid location fix";
 
     if (!gnssTimeoutReported) {
       Serial.println("[GNSS] Timeout - no recent fix");
@@ -64,31 +81,27 @@ void updateGNSS()
   }
 }
 
-// Get only latitude
-double getLatitude()
-{
+double getLatitude() {
   return currentLat;
 }
 
-// Get only longitude
-double getLongitude()
-{
+double getLongitude() {
   return currentLng;
 }
 
-// Check whether current GNSS fix is valid
-bool hasGNSSFix()
-{
+bool hasGNSSFix() {
   return gnssHasFix;
 }
 
-// Get all GNSS data in one call
-GNSSData getGNSSData()
-{
+GNSSData getGNSSData() {
   GNSSData data;
   data.lat = currentLat;
   data.lng = currentLng;
   data.hasFix = gnssHasFix;
   data.age = gnss.location.age();
+  data.charsProcessed = gnss.charsProcessed();
+  data.sentencesWithFix = gnss.sentencesWithFix();
+  data.failedChecksum = gnss.failedChecksum();
+  data.status = gnssStatus;
   return data;
 }
