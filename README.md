@@ -5,8 +5,8 @@ Create a arduino_secrets.h containing your wifi creds (dont sync it with git):
 ```cpp
 #pragma once
 
-#define SECRET_SSID "xxxx"
-#define SECRET_PASS "xxxx"
+#define SECRET_SSID "iot-workshop"
+#define SECRET_PASS "94411140"
 ```
 ## Context
 Introductie in de wereld van IoT, van Thing tot (interoperable) service.
