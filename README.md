@@ -8,6 +8,15 @@ Create a arduino_secrets.h containing your wifi creds (dont sync it with git):
 #define SECRET_SSID "iot-workshop"
 #define SECRET_PASS "94411140"
 ```
+
+## Arduino libraries
+
+Install these libraries in the Arduino IDE via **Sketch > Include Library > Manage Libraries**:
+
+- **ArduinoJson** by Benoit Blanchon, used in `Stap6_integratie` to build the GeoJSON message.
+- **Adafruit AM2320 sensor library** by Adafruit, and all it's dependencies. Used for the AM-2320 temperature and humidity sensor.
+- **Adafruit Unified Sensor** by Adafruit, required by the AM2320 sensor library.
+
 ## Context
 Introductie in de wereld van IoT, van Thing tot (interoperable) service.
 

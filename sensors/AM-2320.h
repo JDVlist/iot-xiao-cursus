@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "Adafruit_Sensor.h"
-#include "Adafruit_AM2320.h"
+#include <Adafruit_Sensor.h>
+#include <Adafruit_AM2320.h>
 
 Adafruit_AM2320 am2320 = Adafruit_AM2320();
 
