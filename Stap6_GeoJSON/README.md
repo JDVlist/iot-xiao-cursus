@@ -1,13 +1,23 @@
-# Stap 6: Integratie
+# Stap 6: GeoJSON
 
-In deze stap brengen we de vorige onderdelen samen:
+In deze stap brengen we de vorige onderdelen samen tot een bericht:
 
 - sensorwaarde lezen
 - GNSS-locatie ophalen
 - WiFi verbinden
 - alles samenvoegen tot een GeoJSON-bericht
 
-De backend is in deze stap nog niet online. Daarom versturen we de GeoJSON nog niet met HTTP, maar printen we het bericht in de Serial Monitor.
+We versturen het bericht nog niet met HTTP. Dat doen we later.
+
+In deze stap printen we de GeoJSON alleen in de Serial Monitor.
+
+Belangrijk: de `.ino` laat zien waar de data vandaan komt. Het bouwen van de GeoJSON zelf staat in een helper:
+
+```text
+../helpers/geojson.h
+```
+
+De `.ino` start de modules op, haalt actuele waarden op, en roept daarna de helper aan.
 
 ## Libraries installeren
 
@@ -51,7 +61,7 @@ Gebruik natuurlijk de gegevens van het netwerk waarmee je XIAO moet verbinden.
 Open in de Arduino IDE:
 
 ```text
-Stap6_integratie/Stap6_integratie.ino
+Stap6_GeoJSON/Stap6_GeoJSON.ino
 ```
 
 Upload de sketch naar de XIAO ESP32C3.
@@ -92,7 +102,8 @@ float humidity = getHumidity();
 Daarna wordt daar een GeoJSON-string van gemaakt:
 
 ```cpp
-String geoJson = buildGeoJson(gps, wifi, temperature, humidity);
+GeoJsonMeasurement measurement = getCurrentMeasurement();
+String geoJson = buildGeoJson(measurement);
 ```
 
 Die variabele wordt nu alleen geprint:
@@ -102,6 +113,36 @@ Serial.println(geoJson);
 ```
 
 In een volgende stap kan dezelfde `geoJson` variabele naar een backend worden verstuurd.
+
+## Code split
+
+De code is gesplitst in twee verantwoordelijkheden.
+
+`Stap6_GeoJSON.ino` regelt de hardware en timing:
+
+```cpp
+setupSensor();
+setupGNSS();
+setupWiFi();
+updateGNSS();
+updateWiFi();
+```
+
+Daarna vult de sketch zelf een `GeoJsonMeasurement`:
+
+```cpp
+GeoJsonMeasurement measurement = getCurrentMeasurement();
+```
+
+Die functie staat bewust in de `.ino`, zodat je in de cursus goed kunt volgen waar sensor-, GNSS- en WiFi-data vandaan komen.
+
+Daarna regelt `../helpers/geojson.h` het dataformaat:
+
+```cpp
+String geoJson = buildGeoJson(measurement);
+```
+
+Daardoor blijft het dynamisch. De helper heeft geen hardcoded sensorwaarden of coordinaten. Elke keer dat `getCurrentMeasurement()` wordt aangeroepen, gaan de nieuwste sensor-, GNSS- en WiFi-waarden mee naar de GeoJSON-builder.
 
 ## GeoJSON
 
@@ -169,8 +210,7 @@ In de Serial Monitor verschijnt ongeveer elke 5 seconden:
 
 ```text
 === GeoJSON ===
-{"type":"Feature","geometry":{"type":"Point","coordinates":[4.897106,52.110352]},"properties":{"temperatureC":21.5,"humidityRH":56,"gnssHasFix":true,"gnssStatus":"valid GNSS fix","gnssAgeMs":3,"wifiConnected":true,"wifiStatus":"connected","wifiSsid":"iot-workshop","wifiIpAddress":"192.168.0.101","wifiRssi":-24}}
-[HTTP] Backend not online yet; GeoJSON is printed instead of sent
+{"type":"Feature","geometry":{"type":"Point","coordinates":[4.897106,52.110352]},"properties":{"deviceId":"B0:A6:04:07:A4:9C","temperatureC":21.5,"humidityRH":56,"gnssHasFix":true,"gnssStatus":"valid GNSS fix","gnssAgeMs":3,"wifiConnected":true,"wifiStatus":"connected","wifiSsid":"iot-workshop","wifiIpAddress":"192.168.0.101","wifiRssi":-24}}
 ```
 
 ## Debuggen
