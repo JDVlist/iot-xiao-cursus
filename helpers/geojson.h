@@ -16,6 +16,10 @@ struct GeoJsonMeasurement {
   float temperatureC;
   float humidityRH;
 
+  String sensorName;
+  float value;
+  String unit;
+
   String deviceId;
   String gnssStatus;
   unsigned long gnssAgeMs;
@@ -52,8 +56,11 @@ String buildGeoJson(GeoJsonMeasurement measurement) {
   }
 
   JsonObject properties = doc.createNestedObject("properties");
-  properties["deviceId"] = measurement.deviceId;
+  properties["sensor_name"] = measurement.sensorName;
+  addNullableFloat(properties, "value", measurement.value);
+  properties["unit"] = measurement.unit;
 
+  properties["deviceId"] = measurement.deviceId;
   addNullableFloat(properties, "temperatureC", measurement.temperatureC);
   addNullableFloat(properties, "humidityRH", measurement.humidityRH);
 

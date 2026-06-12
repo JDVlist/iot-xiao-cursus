@@ -160,8 +160,9 @@ Deze stap maakt een `Feature`:
   "properties": {
     "temperatureC": 21.5,
     "humidityRH": 56,
-    "gnssHasFix": true,
-    "wifiConnected": true
+    "sensor_name": "temp",
+    "value": 21.5,
+    "unit": "C"
   }
 }
 ```
@@ -210,7 +211,7 @@ In de Serial Monitor verschijnt ongeveer elke 5 seconden:
 
 ```text
 === GeoJSON ===
-{"type":"Feature","geometry":{"type":"Point","coordinates":[4.897106,52.110352]},"properties":{"deviceId":"B0:A6:04:07:A4:9C","temperatureC":21.5,"humidityRH":56,"gnssHasFix":true,"gnssStatus":"valid GNSS fix","gnssAgeMs":3,"wifiConnected":true,"wifiStatus":"connected","wifiSsid":"iot-workshop","wifiIpAddress":"192.168.0.101","wifiRssi":-24}}
+{"type":"Feature","geometry":{"type":"Point","coordinates":[4.897106,52.110352]},"properties":{"sensor_name":"temp","value":21.5,"unit":"C","deviceId":"B0:A6:04:07:A4:9C","temperatureC":21.5,"humidityRH":56,"gnssHasFix":true,"gnssStatus":"valid GNSS fix","gnssAgeMs":3,"wifiConnected":true,"wifiStatus":"connected","wifiSsid":"iot-workshop","wifiIpAddress":"192.168.0.101","wifiRssi":-24}}
 ```
 
 ## Debuggen
