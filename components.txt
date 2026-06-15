@@ -1,0 +1,7 @@
+Seeed Studio XIAO - ESP32-C3 https://www.tinytronics.nl/nl/development-boards/microcontroller-boards/met-wi-fi/seeed-studio-xiao-esp32-c3
+AM2320 Thermometer Temperatuur en Vochtigheids Sensor https://www.tinytronics.nl/nl/sensoren/lucht/vochtigheid/am2320-thermometer-temperatuur-en-vochtigheids-sensor
+GY-NEO6MV2 GPS Module https://www.tinytronics.nl/nl/communicatie-en-signalen/draadloos/gps/modules/gy-neo6mv2-gps-module 
+Breadboard https://www.tinytronics.nl/nl/gereedschap-en-montage/prototyping-toebehoren/breadboards/breadboard-400-points 
+Header pins (for GPS module) https://www.tinytronics.nl/nl/kabels-en-connectoren/connectoren/pin-headers/male/40-pins-header-male 
+10 kΩ resistors (2x) https://www.tinytronics.nl/nl/componenten/weerstanden/weerstanden/10k%CF%89-weerstand-(standaard-pull-up-of-pull-down-weerstand) 
+jumper cables (for breadboard) https://www.tinytronics.nl/nl/kabels-en-connectoren/kabels-en-adapters/prototyping-draden/dupont-compatible-en-jumper/breadboard-draden-65-stuks-verschillende-maten 
