@@ -1,6 +1,6 @@
-# Iot Workshop 
+# IoT Workshop
 
-Create a arduino_secrets.h containing your wifi creds (dont sync it with git):
+Create an `arduino_secrets.h` file with your Wi-Fi credentials. Do not commit this file to Git:
 
 ```cpp
 #pragma once
@@ -9,68 +9,69 @@ Create a arduino_secrets.h containing your wifi creds (dont sync it with git):
 #define SECRET_PASS "94411140"
 ```
 
-## Arduino libraries
+## Arduino Libraries
 
 Install these libraries in the Arduino IDE via **Sketch > Include Library > Manage Libraries**:
 
-- **ArduinoJson** by Benoit Blanchon, used in `Stap6_integratie` to build the GeoJSON message.
-- **Adafruit AM2320 sensor library** by Adafruit, and all it's dependencies. Used for the AM-2320 temperature and humidity sensor.
+- **ArduinoJson** by Benoit Blanchon, used in `Stap6_GeoJSON` to build the GeoJSON message.
+- **Adafruit AM2320 sensor library** by Adafruit, including all dependencies. Used for the AM-2320 temperature and humidity sensor.
 - **Adafruit Unified Sensor** by Adafruit, required by the AM2320 sensor library.
 - **TinyGPSPlus** by Mikal Hart, used in `Stap4_GNSS` to read GNSS/GPS data.
 
 ## FAQ
 
-### Arduino IDE is mijn board vergeten. Hoe stel ik de XIAO ESP32C3 opnieuw in?
+### The Arduino IDE forgot my board. How do I set up the XIAO ESP32C3 again?
 
-Soms onthoudt de Arduino IDE het gekozen board of de COM-poort niet meer. Stel ze dan opnieuw in:
+Sometimes the Arduino IDE no longer remembers the selected board or COM port. Set them again:
 
-1. Sluit de XIAO ESP32C3 aan met een USB-C kabel die ook data ondersteunt.
-2. Open de Arduino IDE.
-3. Controleer of de ESP32 board package is geinstalleerd:
-   - Ga naar **Tools > Board > Boards Manager...**
-   - Zoek op `esp32`
-   - Installeer **esp32** by **Espressif Systems** als die nog niet is geinstalleerd.
-4. Kies het board:
-   - Ga naar **Tools > Board > ESP32 Arduino**
-   - Kies **XIAO_ESP32C3**
-5. Kies de poort:
-   - Ga naar **Tools > Port**
-   - Kies de COM-poort die verschijnt als de XIAO is aangesloten, bijvoorbeeld `COM3`, `COM4` of hoger.
-6. Klik op **Verify** om te compileren.
-7. Klik op **Upload** om de sketch op het board te zetten.
+1. Connect the XIAO ESP32C3 with a USB-C cable that supports data.
+2. Open the Arduino IDE.
+3. Check that the ESP32 board package is installed:
+   - Go to **Tools > Board > Boards Manager...**
+   - Search for `esp32`
+   - Install **esp32** by **Espressif Systems** if it is not installed yet.
+4. Select the board:
+   - Go to **Tools > Board > ESP32 Arduino**
+   - Select **XIAO_ESP32C3**
+5. Select the port:
+   - Go to **Tools > Port**
+   - Select the COM port that appears when the XIAO is connected, for example `COM3`, `COM4`, or higher.
+6. Click **Verify** to compile.
+7. Click **Upload** to upload the sketch to the board.
 
-Als uploaden blijft hangen op `Connecting...`, probeer dan:
+If uploading gets stuck on `Connecting...`, try this:
 
-- sluit de Serial Monitor
-- trek de USB-kabel los en sluit opnieuw aan
-- kies opnieuw de juiste poort
-- druk kort op **RESET** zodra `Connecting...` verschijnt
-- probeer een andere USB-kabel als het blijft misgaan
+- close the Serial Monitor
+- unplug the USB cable and connect it again
+- select the correct port again
+- briefly press **RESET** when `Connecting...` appears
+- try another USB cable if it still fails
 
-Meer achtergrond staat in de Seeed Studio documentatie voor de XIAO ESP32C3:
+More background is available in the Seeed Studio documentation for the XIAO ESP32C3:
 
 https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
 
 ## Context
-Introductie in de wereld van IoT, van Thing tot (interoperable) service.
 
-## Omgeving
-We zitten in een veilige omgeving, er zijn geen domme vragen!
-Begrijpt u iets niet, vraag het!
+An introduction to the world of IoT, from a Thing to an interoperable service.
 
-Geniet van de dag samen.
+## Environment
+
+We are in a safe learning environment. There are no bad questions.
+If you do not understand something, ask.
+
+Enjoy the day together.
 
 ## Content
-- Introductie IoT (in de Arduino) wereld
-- Basis aansluiting en programmeren van het Thing
-- Thing laten praten met een GPS/GNSS
-- Ons Thing en het Internet via WiFi
-- Thing laten praten met een sensor
-- Opzetten van een Docker webservice voor de metingen
-- Thing laten meten en meeting versturen
-- Kijken naar al onze data
-- Conclusie
 
+- Introduction to the IoT world with Arduino
+- Basic wiring and programming for the Thing
+- Make the Thing communicate with GPS/GNSS
+- Connect our Thing to the internet via Wi-Fi
+- Make the Thing communicate with a sensor
+- Set up a Docker web service for measurements
+- Make the Thing measure and send a measurement
+- Inspect all our data
+- Conclusion
 
-
-https://api.riot-os.org/group__boards__seeedstudio-xiao-esp32c3.html 
+https://api.riot-os.org/group__boards__seeedstudio-xiao-esp32c3.html

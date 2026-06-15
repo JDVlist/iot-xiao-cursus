@@ -1,39 +1,39 @@
-# Stap 6: GeoJSON
+# Step 6: GeoJSON
 
-In deze stap brengen we de vorige onderdelen samen tot een bericht:
+In this step, we combine the previous parts into one message:
 
-- sensorwaarde lezen
-- GNSS-locatie ophalen
-- WiFi verbinden
-- alles samenvoegen tot een GeoJSON-bericht
+- read the sensor value
+- get the GNSS location
+- connect to Wi-Fi
+- combine everything into a GeoJSON message
 
-We versturen het bericht nog niet met HTTP. Dat doen we later.
+We do not send the message with HTTP yet. That comes later.
 
-In deze stap printen we de GeoJSON alleen in de Serial Monitor.
+In this step, we only print the GeoJSON in the Serial Monitor.
 
-Belangrijk: de `.ino` laat zien waar de data vandaan komt. Het bouwen van de GeoJSON zelf staat in een helper:
+Important: the `.ino` shows where the data comes from. The GeoJSON builder itself is in a helper:
 
 ```text
 ../helpers/geojson.h
 ```
 
-De `.ino` start de modules op, haalt actuele waarden op, en roept daarna de helper aan.
+The `.ino` starts the modules, reads current values, and then calls the helper.
 
-## Libraries installeren
+## Install Libraries
 
-Deze stap gebruikt libraries uit eerdere stappen en een extra JSON-library.
+This step uses libraries from earlier steps and one extra JSON library.
 
-Installeer via de Arduino IDE:
+Install them through the Arduino IDE:
 
-1. Ga naar **Sketch > Include Library > Manage Libraries...**
-2. Installeer deze libraries:
+1. Go to **Sketch > Include Library > Manage Libraries...**
+2. Install these libraries:
 
 - **ArduinoJson** by Benoit Blanchon
 - **TinyGPSPlus** by Mikal Hart
 - **Adafruit AM2320 sensor library** by Adafruit
 - **Adafruit Unified Sensor** by Adafruit
 
-Als een library mist, krijg je meestal een fout zoals:
+If a library is missing, you usually get an error such as:
 
 ```text
 fatal error: ArduinoJson.h: No such file or directory
@@ -41,11 +41,11 @@ fatal error: TinyGPSPlus.h: No such file or directory
 fatal error: Adafruit_Sensor.h: No such file or directory
 ```
 
-## WiFi gegevens
+## Wi-Fi Credentials
 
-De WiFi-naam en het wachtwoord staan niet direct in de sketch.
+The Wi-Fi name and password are not written directly in the sketch.
 
-Maak of controleer het bestand `arduino_secrets.h` in de hoofdmap:
+Create or check the `arduino_secrets.h` file in the repository root:
 
 ```cpp
 #pragma once
@@ -54,27 +54,27 @@ Maak of controleer het bestand `arduino_secrets.h` in de hoofdmap:
 #define SECRET_PASS "94411140"
 ```
 
-Gebruik natuurlijk de gegevens van het netwerk waarmee je XIAO moet verbinden.
+Use the credentials for the network that your XIAO should connect to.
 
-## Code openen
+## Open the Code
 
-Open in de Arduino IDE:
+Open this file in the Arduino IDE:
 
 ```text
 Stap6_GeoJSON/Stap6_GeoJSON.ino
 ```
 
-Upload de sketch naar de XIAO ESP32C3.
+Upload the sketch to the XIAO ESP32C3.
 
-Open daarna de Serial Monitor op:
+Then open the Serial Monitor at:
 
 ```text
 115200 baud
 ```
 
-## Wat doet de sketch?
+## What Does the Sketch Do?
 
-In `setup()` starten we alle modules:
+In `setup()`, we start all modules:
 
 ```cpp
 setupLogging();
@@ -83,14 +83,14 @@ setupGNSS();
 setupWiFi();
 ```
 
-In `loop()` blijven GNSS en WiFi steeds updaten:
+In `loop()`, GNSS and Wi-Fi keep updating:
 
 ```cpp
 updateGNSS();
 updateWiFi();
 ```
 
-Elke 5 seconden haalt de sketch de nieuwste data op:
+Every 5 seconds, the sketch reads the latest data:
 
 ```cpp
 GNSSData gps = getGNSSData();
@@ -99,26 +99,26 @@ float temperature = getTemperature();
 float humidity = getHumidity();
 ```
 
-Daarna wordt daar een GeoJSON-string van gemaakt:
+Then it turns that into a GeoJSON string:
 
 ```cpp
 GeoJsonMeasurement measurement = getCurrentMeasurement();
 String geoJson = buildGeoJson(measurement);
 ```
 
-Die variabele wordt nu alleen geprint:
+For now, that variable is only printed:
 
 ```cpp
 Serial.println(geoJson);
 ```
 
-In een volgende stap kan dezelfde `geoJson` variabele naar een backend worden verstuurd.
+In a later step, the same `geoJson` variable can be sent to a backend.
 
-## Code split
+## Code Split
 
-De code is gesplitst in twee verantwoordelijkheden.
+The code is split into two responsibilities.
 
-`Stap6_GeoJSON.ino` regelt de hardware en timing:
+`Stap6_GeoJSON.ino` handles hardware and timing:
 
 ```cpp
 setupSensor();
@@ -128,27 +128,27 @@ updateGNSS();
 updateWiFi();
 ```
 
-Daarna vult de sketch zelf een `GeoJsonMeasurement`:
+Then the sketch fills a `GeoJsonMeasurement`:
 
 ```cpp
 GeoJsonMeasurement measurement = getCurrentMeasurement();
 ```
 
-Die functie staat bewust in de `.ino`, zodat je in de cursus goed kunt volgen waar sensor-, GNSS- en WiFi-data vandaan komen.
+That function is intentionally in the `.ino`, so you can clearly follow where sensor, GNSS, and Wi-Fi data come from during the course.
 
-Daarna regelt `../helpers/geojson.h` het dataformaat:
+Then `../helpers/geojson.h` handles the data format:
 
 ```cpp
 String geoJson = buildGeoJson(measurement);
 ```
 
-Daardoor blijft het dynamisch. De helper heeft geen hardcoded sensorwaarden of coordinaten. Elke keer dat `getCurrentMeasurement()` wordt aangeroepen, gaan de nieuwste sensor-, GNSS- en WiFi-waarden mee naar de GeoJSON-builder.
+This keeps it dynamic. The helper has no hardcoded sensor values or coordinates. Every time `getCurrentMeasurement()` is called, the latest sensor, GNSS, and Wi-Fi values are passed to the GeoJSON builder.
 
 ## GeoJSON
 
-GeoJSON is JSON voor geografische data.
+GeoJSON is JSON for geographic data.
 
-Deze stap maakt een `Feature`:
+This step creates a `Feature`:
 
 ```json
 {
@@ -167,92 +167,92 @@ Deze stap maakt een `Feature`:
 }
 ```
 
-Let op de volgorde van de coordinaten:
+Note the coordinate order:
 
 ```text
 [longitude, latitude]
 ```
 
-Dat is de GeoJSON-volgorde. Mensen noemen coordinaten vaak andersom, maar GeoJSON verwacht eerst longitude en daarna latitude.
+That is the GeoJSON order. People often say coordinates the other way around, but GeoJSON expects longitude first and latitude second.
 
-## Geen GNSS fix
+## No GNSS Fix
 
-Als de GNSS-module nog geen geldige locatie heeft, wordt de geometry:
+If the GNSS module does not have a valid location yet, the geometry becomes:
 
 ```json
 "geometry": null
 ```
 
-De sensorwaarden en debugstatus staan dan nog steeds in `properties`.
+The sensor values and debug status are still included in `properties`.
 
-Dat is handig, want dan kun je zien of de sensor en WiFi al werken terwijl de GNSS-module nog zoekt naar satellieten.
+That is useful because you can see whether the sensor and Wi-Fi are already working while the GNSS module is still searching for satellites.
 
-## Sensor kiezen
+## Choose a Sensor
 
-Standaard gebruikt stap 6 de echte AM-2320 sensor:
+By default, step 6 uses the real AM-2320 sensor:
 
 ```cpp
 #include "../sensors/AM-2320.h"
 // #include "../sensors/dummy_sensor.h"
 ```
 
-Wil je zonder sensorhardware testen, wissel deze regels dan om:
+If you want to test without sensor hardware, swap those lines:
 
 ```cpp
 // #include "../sensors/AM-2320.h"
 #include "../sensors/dummy_sensor.h"
 ```
 
-De dummy sensor geeft vaste testwaarden terug.
+The dummy sensor returns fixed test values.
 
-## Verwachte output
+## Expected Output
 
-In de Serial Monitor verschijnt ongeveer elke 5 seconden:
+In the Serial Monitor, about every 5 seconds you will see:
 
 ```text
 === GeoJSON ===
 {"type":"Feature","geometry":{"type":"Point","coordinates":[4.897106,52.110352]},"properties":{"sensor_name":"temp","value":21.5,"unit":"C","deviceId":"B0:A6:04:07:A4:9C","temperatureC":21.5,"humidityRH":56,"gnssHasFix":true,"gnssStatus":"valid GNSS fix","gnssAgeMs":3,"wifiConnected":true,"wifiStatus":"connected","wifiSsid":"iot-workshop","wifiIpAddress":"192.168.0.101","wifiRssi":-24}}
 ```
 
-## Debuggen
+## Debugging
 
-### WiFi werkt niet
+### Wi-Fi Does Not Work
 
-Controleer:
+Check:
 
-- staat het juiste SSID in `arduino_secrets.h`?
-- staat het juiste wachtwoord in `arduino_secrets.h`?
-- is het netwerk 2.4 GHz?
-- is de router of hotspot dichtbij genoeg?
+- is the correct SSID in `arduino_secrets.h`?
+- is the correct password in `arduino_secrets.h`?
+- is the network 2.4 GHz?
+- is the router or hotspot close enough?
 
-### Geen GNSS fix
+### No GNSS Fix
 
-Controleer:
+Check:
 
-- zit `GNSS TX` op `XIAO D7 / RX`?
-- zit `GND` op `GND`?
-- krijgt de GNSS-module voeding?
-- ligt de antenne bij een raam of buiten?
-- wacht lang genoeg; een eerste fix kan enkele minuten duren
+- is `GNSS TX` connected to `XIAO D7 / RX`?
+- is `GND` connected to `GND`?
+- does the GNSS module have power?
+- is the antenna near a window or outside?
+- wait long enough; a first fix can take several minutes
 
-### Sensor geeft null
+### Sensor Returns Null
 
-`temperatureC` of `humidityRH` wordt `null` als de sensor geen geldige waarde teruggeeft.
+`temperatureC` or `humidityRH` becomes `null` if the sensor does not return a valid value.
 
-Controleer:
+Check:
 
-- VCC en GND
-- I2C-aansluiting
-- of de juiste sensor-header actief is
-- of de Adafruit libraries zijn geinstalleerd
+- VCC and GND
+- I2C wiring
+- whether the correct sensor header is active
+- whether the Adafruit libraries are installed
 
-## Waarom deze stap belangrijk is
+## Why This Step Matters
 
-Vanaf nu hebben we een compleet meetbericht:
+From now on, we have a complete measurement message:
 
-- waar is het gemeten?
-- wat is er gemeten?
-- is het apparaat online?
-- wat is de status van GNSS en WiFi?
+- where was it measured?
+- what was measured?
+- is the device online?
+- what is the GNSS and Wi-Fi status?
 
-Dit is precies de vorm die later naar een webservice gestuurd kan worden.
+This is exactly the shape that can later be sent to a web service.

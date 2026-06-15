@@ -1,44 +1,46 @@
-# Sensoren!
+# Sensors
 
-## Kies een sensor (of je krijgt een sensor)
+## Choose a Sensor
 
-Bij de sensor hoort ook een blad, met daarin de instructies om de sensor aan te sluiten.
+Choose a sensor, or you will be assigned one.
 
-> Verbreek de USB verbinding met de XIAO!!!!
+Each sensor comes with a sheet that explains how to connect it.
 
-### Nog meer sensoren
+> Disconnect the USB connection from the XIAO.
+
+### More Sensors
 
 - https://www.tinytronics.nl/nl/sensoren (no endorsement)
 - https://www.sossolutions.nl/zoeken?q=sensors&page=1&trigger=keyword (no endorsement)
 - https://www.otronic.nl/nl/sensors/ (no endorsement)
 ...
 
-## Sensor aansluiten
+## Connect the Sensor
 
-Is de USB verbinding verbroken? Check nog eens, verbinding moet verbroken zijn!
+Is the USB connection disconnected? Check again. It must be disconnected.
 
-Weet je nog hoe het breadboard werkt? Kijk het nog eens na!
+Do you remember how the breadboard works? Review it if needed.
 
-Ook: nooit 5V direct aan GND leggen - of het is `poef` en gedaan
+Also: never connect 5V directly to GND, or it is over.
 
 ![WhatsApp Image 2025-08-24 at 13 34 46](https://github.com/user-attachments/assets/de35acdf-5458-4c57-96e1-f1215c7656e1)
 
-(Bron: Newkids)
+(Source: New Kids)
 
-## Aansluiten
+## Wiring
 
-Draadjes en bruggetjes!
+Wires and jumpers.
 
-Bruggetjes voor VCC (rood) en GND (zwart)
+Use jumpers for VCC (red) and GND (black).
 
-Draadjes voor protocol verbinding
+Use wires for protocol connections.
 
 ### Protocol?
 
-Yep: of we meten een analoge spanning, een digitaal signaal of [I2C](https://nl.wikipedia.org/wiki/I²C-bus)
+Yes: we either measure an analog voltage, a digital signal, or [I2C](https://en.wikipedia.org/wiki/I%C2%B2C).
 
-### In de Arduino Code
+### In the Arduino Code
 
-Uncomment de sensor die je gaat gebruiken! In dit voorbeeld de `HX-711`.
+Uncomment the sensor you will use. In this example, that is the `HX-711`.
 
 <img width="715" height="372" alt="Screenshot 2025-08-24 at 14 36 49" src="https://github.com/user-attachments/assets/cb715f19-a4ab-4654-8223-7159a35162dd" />

@@ -1,33 +1,33 @@
-# WiFi
+# Wi-Fi
 
-We gaan verbinden aan de WiFi.
+We are going to connect to Wi-Fi.
 
-De XIAO ESP32 C3 heeft een WiFi/IP stack onboard en kan direct gebruikt worden.
+The XIAO ESP32-C3 has an onboard Wi-Fi/IP stack and can be used directly.
 
-## Programmeren ...
+## Programming
 
-Open `Stap4_WiFi.ino` in de Arduino IDE
+Open `Stap5_WiFi.ino` in the Arduino IDE.
 
-### Het WiFi SSID en Wachtwoord!
+### Wi-Fi SSID and Password
 
-Omdat deze repo publiek staat, is het "Good practice" om dat niet publiek te maken.
+Because this repository is public, it is good practice not to publish credentials.
 
-Open een simpele editor (je kan er niet bij via de Arduino IDE, gebruik daarom `notepad`, `VS Code` of ...) en open het bestand `arduino_secrets.h`, pas daarin het SSID en Wachtwoord aan.
+Open a simple editor. You cannot edit this file through the Arduino IDE, so use `notepad`, `VS Code`, or another editor. Open `arduino_secrets.h` and update the SSID and password there.
 
 <img width="549" height="172" alt="Screenshot 2025-08-24 at 13 24 23" src="https://github.com/user-attachments/assets/2c41e506-1cc1-4197-891e-92c6e61aaca6" />
 
-Compileer en upload!
+Compile and upload.
 
-Als alles goed gaat, zie je
+If everything works, you will see:
 
-```
+```text
 [WiFi] Connected to Geonovum-Gast
 [WiFi] IP Address: 192.168.1.113
 ```
 
-Als er staat:
+If you see:
 
-```
+```text
 [WiFi] Disconnected
 [WiFi] SSID not found
 ...
@@ -35,14 +35,14 @@ Als er staat:
 [WiFi] Failed to connect
 ```
 
-dan is waarschijnlijk het SSID of het wachtwoord fout, of.... heb je een andere probleem.
+then the SSID or password is probably wrong, or there is another problem.
 
-# Andere IoT protocollen
+# Other IoT Protocols
 
 - Bluetooth
 - LoRa
-- ZigBee
+- Zigbee
 - Thread
-- LoRaWan
+- LoRaWAN
 - NB-IoT
-- Z-Wave 
+- Z-Wave
