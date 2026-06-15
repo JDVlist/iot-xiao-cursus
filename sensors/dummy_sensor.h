@@ -1,7 +1,7 @@
 #pragma once
 
 void setupSensor() {
-  // Geen hardware nodig
+  // Dummy setup so you don't always need hardware
 }
 
 float getTemperature() {
