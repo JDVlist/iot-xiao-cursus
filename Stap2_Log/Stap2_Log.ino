@@ -7,9 +7,9 @@ void setup() {
   while (!Serial) {}
   delay(50);
 
-  uint64_t chipid = ESP.getEfuseMac();  //The chip ID is essentially its MAC address(length: 6 bytes).
+  uint64_t chipid = ESP.getEfuseMac();  // The chip ID is essentially its MAC address (length: 6 bytes).
   Serial.println(mac2String((byte*)&chipid));
-  // lookup MAC detail with https://macaddress.io
+  // Look up MAC details with https://macaddress.io
 }
 
 void loop() {
