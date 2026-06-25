@@ -14,8 +14,4 @@ The message contains the unique MAC address of the Wi-Fi module. The last 3 byte
 
 Can you find it?
 
-Does the number in the Arduino window match the number on your board?
-
-<img width="1741" height="1279" alt="IMG_4980" src="https://github.com/user-attachments/assets/458a3bd6-baa0-4717-971d-947f05838b20" />
-
 That is already one tricky step completed.
