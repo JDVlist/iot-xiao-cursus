@@ -4,6 +4,7 @@
 // NAN means "Not A Number". We use it when latitude/longitude are not valid yet.
 // That is clearer than returning 0.0, because 0.0 is a real coordinate.
 #include <math.h>
+#include <string.h>
 
 // TinyGPSPlus reads NMEA sentences from the GNSS module and turns them into
 // usable values such as latitude, longitude, age, and debug counters.
@@ -63,10 +64,24 @@ struct GNSSData {
   // This should start increasing once the module has a fix.
   unsigned long sentencesWithFix;
 
+  // Number of valid NMEA sentences received.
+  unsigned long passedChecksum;
+
   // Number of NMEA sentences that failed their checksum.
   // A few failures can happen. Many failures can point to noisy wiring,
   // unstable power, or a bad connection.
   unsigned long failedChecksum;
+
+  // Satellite count and HDOP help diagnose "data but no fix".
+  bool satellitesValid;
+  unsigned long satellites;
+  bool hdopValid;
+  double hdop;
+
+  // Raw NMEA sentence/status fields for deeper debugging.
+  const char* lastSentence;
+  const char* rmcStatus;
+  const char* ggaFixQuality;
 
   // Human-readable status for debugging in the Serial Monitor.
   const char* status;
@@ -75,6 +90,14 @@ struct GNSSData {
 // Internal GNSS parser object.
 // This object keeps track of all received NMEA data.
 TinyGPSPlus gnss;
+
+// Extra fields from common NMEA sentences.
+// RMC status: A = active/valid, V = warning/no valid fix.
+// GGA fix quality: 0 = invalid, 1 = GPS fix, 2 = DGPS fix.
+TinyGPSCustom gpRmcStatus(gnss, "GPRMC", 2);
+TinyGPSCustom gnRmcStatus(gnss, "GNRMC", 2);
+TinyGPSCustom gpGgaFixQuality(gnss, "GPGGA", 6);
+TinyGPSCustom gnGgaFixQuality(gnss, "GNGGA", 6);
 
 // Internal state.
 //
@@ -95,6 +118,37 @@ bool gnssTimeoutReported = false;
 // Short text that explains the current GNSS state.
 const char* gnssStatus = "waiting for GNSS data";
 
+// Last complete NMEA sentence received from the GNSS module.
+char currentGNSSSentence[100] = "";
+char lastGNSSSentence[100] = "";
+uint8_t currentGNSSSentenceIndex = 0;
+
+void rememberGNSSByte(char c) {
+  if (c == '$') {
+    currentGNSSSentenceIndex = 0;
+    currentGNSSSentence[currentGNSSSentenceIndex++] = c;
+    currentGNSSSentence[currentGNSSSentenceIndex] = '\0';
+    return;
+  }
+
+  if (currentGNSSSentenceIndex == 0) {
+    return;
+  }
+
+  if (c == '\r' || c == '\n') {
+    currentGNSSSentence[currentGNSSSentenceIndex] = '\0';
+    strncpy(lastGNSSSentence, currentGNSSSentence, sizeof(lastGNSSSentence));
+    lastGNSSSentence[sizeof(lastGNSSSentence) - 1] = '\0';
+    currentGNSSSentenceIndex = 0;
+    return;
+  }
+
+  if (currentGNSSSentenceIndex < sizeof(currentGNSSSentence) - 1) {
+    currentGNSSSentence[currentGNSSSentenceIndex++] = c;
+    currentGNSSSentence[currentGNSSSentenceIndex] = '\0';
+  }
+}
+
 // Start the serial connection to the GNSS module.
 //
 // Call this once from setup().
@@ -114,8 +168,11 @@ void setupGNSS() {
 void updateGNSS() {
   // Read all bytes that are currently waiting in the serial buffer.
   while (SERIALGNSS.available() > 0) {
+    char incoming = SERIALGNSS.read();
+    rememberGNSSByte(incoming);
+
     // gnss.encode(...) returns true when a complete sentence was processed.
-    if (gnss.encode(SERIALGNSS.read())) {
+    if (gnss.encode(incoming)) {
       // A location can be "updated" but still not valid.
       // We only store it when TinyGPSPlus says it is valid.
       if (gnss.location.isUpdated() && gnss.location.isValid()) {
@@ -191,13 +248,24 @@ bool hasGNSSFix() {
 // - The integration step can use this data to build GeoJSON.
 GNSSData getGNSSData() {
   GNSSData data;
+  const char* currentRmcStatus = gpRmcStatus.isValid() ? gpRmcStatus.value() : gnRmcStatus.value();
+  const char* currentGgaFixQuality = gpGgaFixQuality.isValid() ? gpGgaFixQuality.value() : gnGgaFixQuality.value();
+
   data.lat = currentLat;
   data.lng = currentLng;
   data.hasFix = gnssHasFix;
   data.age = gnss.location.age();
   data.charsProcessed = gnss.charsProcessed();
   data.sentencesWithFix = gnss.sentencesWithFix();
+  data.passedChecksum = gnss.passedChecksum();
   data.failedChecksum = gnss.failedChecksum();
+  data.satellitesValid = gnss.satellites.isValid();
+  data.satellites = gnss.satellites.value();
+  data.hdopValid = gnss.hdop.isValid();
+  data.hdop = gnss.hdop.hdop();
+  data.lastSentence = lastGNSSSentence;
+  data.rmcStatus = currentRmcStatus;
+  data.ggaFixQuality = currentGgaFixQuality;
   data.status = gnssStatus;
   return data;
 }

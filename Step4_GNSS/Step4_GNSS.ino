@@ -41,11 +41,49 @@ void loop() {
   Serial.print("Chars processed: ");
   Serial.println(gps.charsProcessed);
 
+  Serial.print("Valid sentences: ");
+  Serial.println(gps.passedChecksum);
+
   Serial.print("Sentences with fix: ");
   Serial.println(gps.sentencesWithFix);
 
   Serial.print("Failed checksums: ");
   Serial.println(gps.failedChecksum);
+
+  Serial.print("Satellites: ");
+  if (gps.satellitesValid) {
+    Serial.println(gps.satellites);
+  } else {
+    Serial.println("not reported yet");
+  }
+
+  Serial.print("HDOP: ");
+  if (gps.hdopValid) {
+    Serial.println(gps.hdop, 1);
+  } else {
+    Serial.println("not reported yet");
+  }
+
+  Serial.print("RMC status: ");
+  if (gps.rmcStatus[0] != '\0') {
+    Serial.println(gps.rmcStatus);
+  } else {
+    Serial.println("not reported yet");
+  }
+
+  Serial.print("GGA fix quality: ");
+  if (gps.ggaFixQuality[0] != '\0') {
+    Serial.println(gps.ggaFixQuality);
+  } else {
+    Serial.println("not reported yet");
+  }
+
+  Serial.print("Last NMEA: ");
+  if (gps.lastSentence[0] != '\0') {
+    Serial.println(gps.lastSentence);
+  } else {
+    Serial.println("none yet");
+  }
 
   delay(1000);
 }
