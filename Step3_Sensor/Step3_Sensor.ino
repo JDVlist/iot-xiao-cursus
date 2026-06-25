@@ -1,6 +1,6 @@
 #include "../helpers/logging.h"
-// #include "../sensors/AM-2320.h"
-#include "../sensors/dummy_sensor.h"
+#include "../sensors/AM-2320.h"
+// #include "../sensors/dummy_sensor.h"
 
 void setup() {
   setupLogging();
