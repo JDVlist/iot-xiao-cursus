@@ -41,6 +41,4 @@ Yes: we either measure an analog voltage, a digital signal, or [I2C](https://en.
 
 ### In the Arduino Code
 
-Uncomment the sensor you will use. In this example, that is the `HX-711`.
-
 <img width="715" height="372" alt="Screenshot 2025-08-24 at 14 36 49" src="https://github.com/user-attachments/assets/cb715f19-a4ab-4654-8223-7159a35162dd" />

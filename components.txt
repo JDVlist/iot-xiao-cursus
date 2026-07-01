@@ -6,3 +6,4 @@ Header pins for GPS module https://www.tinytronics.nl/nl/kabels-en-connectoren/c
 10 kOhm resistors (2x) https://www.tinytronics.nl/nl/componenten/weerstanden/weerstanden/10k%CF%89-weerstand-(standaard-pull-up-of-pull-down-weerstand)
 330 Ohm resistors
 Jumper cables for breadboard https://www.tinytronics.nl/nl/kabels-en-connectoren/kabels-en-adapters/prototyping-draden/dupont-compatible-en-jumper/breadboard-draden-65-stuks-verschillende-maten
+LED
